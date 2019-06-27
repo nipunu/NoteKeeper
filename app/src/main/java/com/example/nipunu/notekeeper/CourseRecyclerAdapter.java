@@ -13,9 +13,9 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
- * Created by Nipunu on 01,June,2019
+ * Created by Nipunu on 24,June,2019
  */
-public class CourseRecyclerAdapter extends RecyclerView.Adapter<CourseRecyclerAdapter.ViewHolder>{
+public class CourseRecyclerAdapter extends RecyclerView.Adapter<CourseRecyclerAdapter.ViewHolder> {
 
     private final Context context;
     private final LayoutInflater layoutInflater;
@@ -23,23 +23,23 @@ public class CourseRecyclerAdapter extends RecyclerView.Adapter<CourseRecyclerAd
 
     public CourseRecyclerAdapter(Context context, List<CourseInfo> courses) {
         this.context = context;
-        layoutInflater = LayoutInflater.from(context);
+        layoutInflater = LayoutInflater.from(this.context);
         this.courses = courses;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView  = layoutInflater.inflate(R.layout.item_course_list,viewGroup,false);
+        View itemView = layoutInflater.inflate(R.layout.item_course_list, viewGroup,false);
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-            CourseInfo course = courses.get(position);
-            viewHolder.textCourse.setText(course.getTitle());
-//            viewHolder.textTitle.setText((note.getTitle()));
-            viewHolder.currentPosition = position;
+        CourseInfo course = courses.get(position);
+        viewHolder.textCourse.setText(course.getTitle());
+//        viewHolder.textTitle.setText(note.getTitle());
+        viewHolder.currentPosition = position;
     }
 
     @Override
@@ -61,11 +61,7 @@ public class CourseRecyclerAdapter extends RecyclerView.Adapter<CourseRecyclerAd
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Snackbar.make(v,courses.get(currentPosition).getTitle(),Snackbar.LENGTH_LONG);
-
-//                    Intent noteIntent = new Intent(context,NoteActivity.class);
-//                    noteIntent.putExtra(NoteActivity.NOTE_POSITION,currentPosition);
-//                    context.startActivity(noteIntent);
+                    Snackbar.make(v,courses.get(currentPosition).getTitle(),Snackbar.LENGTH_LONG).show();
                 }
             });
         }

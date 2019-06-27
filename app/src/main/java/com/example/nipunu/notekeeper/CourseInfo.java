@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 /**
- * Created by Nipunu.
+ * Created by Jim.
  */
 
 public final class CourseInfo implements Parcelable {
@@ -22,10 +22,10 @@ public final class CourseInfo implements Parcelable {
     }
 
     private CourseInfo(Parcel source) {
-        mModules = new ArrayList<>();
-        source.readTypedList(mModules,ModuleInfo.CREATOR);
         mCourseId = source.readString();
         mTitle = source.readString();
+        mModules = new ArrayList<>();
+        source.readTypedList(mModules, ModuleInfo.CREATOR);
     }
 
     public String getCourseId() {
@@ -82,7 +82,6 @@ public final class CourseInfo implements Parcelable {
     public int hashCode() {
         return mCourseId.hashCode();
     }
-
     @Override
     public int describeContents() {
         return 0;
@@ -90,20 +89,23 @@ public final class CourseInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(mModules);
         dest.writeString(mCourseId);
         dest.writeString(mTitle);
+        dest.writeTypedList(mModules);
     }
 
-    public static final Parcelable.Creator<CourseInfo> CREATOR = new Creator<CourseInfo>() {
-        @Override
-        public CourseInfo createFromParcel(Parcel source) {
-            return new CourseInfo(source);
-        }
+    public static final Creator<CourseInfo> CREATOR =
+            new Creator<CourseInfo>() {
 
-        @Override
-        public CourseInfo[] newArray(int size) {
-            return new CourseInfo[size];
-        }
-    };
+                @Override
+                public CourseInfo createFromParcel(Parcel source) {
+                    return new CourseInfo(source);
+                }
+
+                @Override
+                public CourseInfo[] newArray(int size) {
+                    return new CourseInfo[size];
+                }
+            };
+
 }

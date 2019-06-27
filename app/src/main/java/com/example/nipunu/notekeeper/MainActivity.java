@@ -1,7 +1,9 @@
 package com.example.nipunu.notekeeper;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,17 +18,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
     private NoteRecyclerAdapter noteRecyclerAdapter;
-    private RecyclerView recyclerItems;
+    private RecyclerView recyclerNotes;
     private LinearLayoutManager notesLayoutManager;
-    private GridLayoutManager coursesLayoutManager;
     private CourseRecyclerAdapter courseRecyclerAdapter;
+    private GridLayoutManager coursesLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +41,13 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,NoteActivity.class));
+                startActivity(new Intent(MainActivity.this, NoteActivity.class));
             }
         });
+
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general,false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_notification,false);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync,false);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -51,21 +57,50 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         initializeDisplayContent();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+//        adapterNotes.notifyDataSetChanged();
         noteRecyclerAdapter.notifyDataSetChanged();
+        updateNavHeader();
+    }
+
+    private void updateNavHeader() {
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            View headerView = navigationView.getHeaderView(0);
+            TextView textUserName = (TextView)headerView.findViewById(R.id.text_user_name);
+            TextView textEmailAddress = (TextView)headerView.findViewById(R.id.text_email_address);
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        String userName = pref.getString("user_display_name","");
+        String emailAddress = pref.getString("user_email_address","");
+
+        textUserName.setText(userName);
+        textEmailAddress.setText(emailAddress);
     }
 
     private void initializeDisplayContent() {
+//        final ListView listNotes = (ListView) findViewById(R.id.list_notes);
+//
+//        List<NoteInfo> notes = DataManager.getInstance().getNotes();
+//        adapterNotes = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,notes);
+//        listNotes.setAdapter(adapterNotes);
+//        listNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
+////                NoteInfo note = (NoteInfo) listNotes.getItemAtPosition(position);
+//                intent.putExtra(NoteActivity.NOTE_POSITION,position);
+//                startActivity(intent);
+//            }
+//        });
 
-        recyclerItems = (RecyclerView) findViewById(R.id.list_items);
+        recyclerNotes = (RecyclerView) findViewById(R.id.list_items);
         notesLayoutManager = new LinearLayoutManager(this);
-        coursesLayoutManager = new GridLayoutManager(this,2);
+        coursesLayoutManager = new GridLayoutManager(this,getResources().getInteger(R.integer.course_grid_span));
 
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
         noteRecyclerAdapter = new NoteRecyclerAdapter(this,notes);
@@ -76,24 +111,23 @@ public class MainActivity extends AppCompatActivity
         displayNotes();
     }
 
-    private void displayCourses() {
-        recyclerItems.setLayoutManager(coursesLayoutManager);
-        recyclerItems.setAdapter(courseRecyclerAdapter);
-
-        selectNavigationMenuItem(R.id.nav_courses);
-    }
-
     private void displayNotes() {
-        recyclerItems.setLayoutManager(notesLayoutManager);
-        recyclerItems.setAdapter(noteRecyclerAdapter);
+        recyclerNotes.setLayoutManager(notesLayoutManager);
+        recyclerNotes.setAdapter(noteRecyclerAdapter);
 
         selectNavigationMenuItem(R.id.nav_notes);
     }
 
-    private void selectNavigationMenuItem(int nav_notes) {
+    private void selectNavigationMenuItem(int id) {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
-        MenuItem menuItem = menu.findItem(nav_notes).setChecked(true);
+        menu.findItem(id).setChecked(true);
+    }
+
+    private void displayCourses() {
+        recyclerNotes.setLayoutManager(coursesLayoutManager);
+        recyclerNotes.setAdapter(courseRecyclerAdapter);
+        selectNavigationMenuItem(R.id.nav_courses);
     }
 
     @Override
@@ -122,6 +156,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this,SettingsActivity.class));
             return true;
         }
 
@@ -135,13 +170,16 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_notes) {
-         displayNotes();
+            displayNotes();
         } else if (id == R.id.nav_courses) {
-           displayCourses();
+            displayCourses();
 
         } else if (id == R.id.nav_share) {
+//            handleSelection(R.string.nav_share_message);
+            handleShare();
 
         } else if (id == R.id.nav_send) {
+            handleSelection(R.string.nav_send_message);
 
         }
 
@@ -150,9 +188,15 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void handleSelection(String message) {
-        //Reference a view to pass as reference to the snackbar
+    private void handleShare() {
         View view = findViewById(R.id.list_items);
-        Snackbar.make(view,message,Snackbar.LENGTH_LONG).show();
+        Snackbar.make(view,"Share to - " +
+                PreferenceManager.getDefaultSharedPreferences(this).getString("user_favorite_social","")
+                ,Snackbar.LENGTH_LONG).show();
+    }
+
+    private void handleSelection(int message_id) {
+        View view = findViewById(R.id.list_items);
+        Snackbar.make(view,message_id,Snackbar.LENGTH_LONG).show();
     }
 }

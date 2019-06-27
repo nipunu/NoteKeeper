@@ -74,18 +74,20 @@ public final class ModuleInfo implements Parcelable {
         dest.writeString(mModuleId);
         dest.writeString(mTitle);
         dest.writeByte((byte)(mIsComplete ? 1 : 0));
-
     }
 
-    public static final Parcelable.Creator<ModuleInfo> CREATOR = new Creator<ModuleInfo>() {
-        @Override
-        public ModuleInfo createFromParcel(Parcel source) {
-            return new ModuleInfo(source);
-        }
+    public static final Creator<ModuleInfo> CREATOR =
+            new Creator<ModuleInfo>() {
 
-        @Override
-        public ModuleInfo[] newArray(int size) {
-            return new ModuleInfo[size];
-        }
-    };
+                @Override
+                public ModuleInfo createFromParcel(Parcel source) {
+                    return new ModuleInfo(source);
+                }
+
+                @Override
+                public ModuleInfo[] newArray(int size) {
+                    return new ModuleInfo[size];
+                }
+            };
+
 }

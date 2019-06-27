@@ -6,6 +6,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Created by Nipunu on 20,June,2019
+ */
 public class DataManagerTest {
 
     private static DataManager dm;
@@ -82,8 +85,7 @@ public class DataManagerTest {
         final String noteTile = "Test note title";
         final String noteText = "Test note text";
 
-        int noteIndex = dm.createNewNote(course, noteTile, noteText);
-
+        int noteIndex = dm.createNewNote(course,noteTile,noteText);
         NoteInfo newNote = dm.getNotes().get(noteIndex);
 
         assertEquals(course,newNote.getCourse());

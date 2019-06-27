@@ -23,11 +23,11 @@ public class DataManager {
     }
 
     public String getCurrentUserName() {
-        return "Nipunu Wijesingha";
+        return "Dineth De Silva";
     }
 
     public String getCurrentUserEmail() {
-        return "nipunuw@gmail.com";
+        return "dineth@gmail.com";
     }
 
     public List<NoteInfo> getNotes() {
@@ -193,6 +193,7 @@ public class DataManager {
 
         return new CourseInfo("java_core", "Java Fundamentals: The Core Platform", modules);
     }
+    //endregion
 
     public int createNewNote(CourseInfo course, String noteTile, String noteText) {
         int index = createNewNote();
@@ -202,6 +203,4 @@ public class DataManager {
         newNote.setText(noteText);
         return index;
     }
-    //endregion
-
 }
