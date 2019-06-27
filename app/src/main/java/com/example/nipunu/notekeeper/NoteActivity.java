@@ -35,6 +35,7 @@ public class NoteActivity extends AppCompatActivity {
     private String originalNoteCourseId;
     private String originalNoteTitle;
     private String originalNoteText;
+    private int selectedNotePosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +94,7 @@ public class NoteActivity extends AppCompatActivity {
     private void readDisplayStateValues() {
         Intent intent = getIntent();
 //        selectedNoteInfo = intent.getParcelableExtra(NOTE_INFO);
-        int selectedNotePosition = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
+        selectedNotePosition = intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET);
 //        isNewNote = selectedNoteInfo == null;
         isNewNote = selectedNotePosition == POSITION_NOT_SET;
         if(!isNewNote) {
@@ -172,8 +173,28 @@ public class NoteActivity extends AppCompatActivity {
             isCanceling = true;
             finish();
         }
+        else if(id == R.id.action_next){
+            moveNext();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem next = menu.findItem(R.id.action_next);
+        int lastNoteIndex = DataManager.getInstance().getNotes().size()-1;
+        next.setEnabled(selectedNotePosition < lastNoteIndex);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void moveNext() {
+        saveNote();
+        ++selectedNotePosition;
+        selectedNoteInfo = DataManager.getInstance().getNotes().get(selectedNotePosition);
+        saveOriginalNoteValues();
+        displayNote(spinnerCourses,textNoteTitle,textNoteText);
+        invalidateOptionsMenu();
     }
 
     private void sendEmail() {
@@ -187,4 +208,7 @@ public class NoteActivity extends AppCompatActivity {
         intentEmail.putExtra(Intent.EXTRA_TEXT,text);
         startActivity(intentEmail);
     }
+
+
+
 }
