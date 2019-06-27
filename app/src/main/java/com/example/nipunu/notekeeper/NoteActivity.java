@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +18,7 @@ import android.widget.Spinner;
 import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
-
+    public final String TAG = getClass().getSimpleName();
     public static final String NOTE_INFO = "com.example.nipunu.notekeeper.NOTE_INFO";
     public static final String NOTE_POSITION = "com.example.nipunu.notekeeper.NOTE_POSITION";
     public static final String ORIGINAL_COURSE_ID = "com.example.nipunu.notekeeper.ORIGINAL_COURSE_ID";
@@ -62,6 +63,8 @@ public class NoteActivity extends AppCompatActivity {
 
         if(!isNewNote)
         displayNote(spinnerCourses, textNoteTitle, textNoteText);
+
+        Log.d(TAG,"onCreate");
     }
 
     private void restoreOriginalStateValues(Bundle savedInstanceState) {
@@ -126,6 +129,7 @@ public class NoteActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if(isCanceling){
+            Log.i(TAG,"Canceling note at position " + newNotePosition);
             if(isNewNote){
                 DataManager.getInstance().removeNote(newNotePosition);
             }
@@ -136,6 +140,7 @@ public class NoteActivity extends AppCompatActivity {
         else {
             saveNote();
         }
+        Log.d(TAG,"onPause");
     }
 
     private void storePreviousNoteValues() {
